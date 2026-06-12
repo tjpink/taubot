@@ -1,0 +1,322 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="base_mass" value="0.3" /> <!-- arbitrary value for base mass -->
+  <xacro:property name="base_width" value="0.29758" />  
+  <xacro:property name="base_length" value="0.175" />
+  <xacro:property name="base_height" value="0.116" />
+  <xacro:property name="wheel_mass" value="0.3" /> <!-- arbitrary value for wheel mass -->
+  <xacro:property name="wheel_len" value="0.026" />
+  <xacro:property name="wheel_radius" value="0.016488" />
+  <xacro:property name="caster_wheel_mass" value="0.1" /> <!-- arbitrary value for caster wheel mass -->
+  <xacro:property name="caster_wheel_radius" value="0.015" />
+  <xacro:property name="z_offset" value="0.0145" /> <!-- Space btw top of beam and the each joint -->
+
+  <!-- Colors-->
+   <material name="black">
+    <color rgba="0.0 0.0 0.0 1.0"/>
+  </material>
+
+  <material name="blue">
+    <color rgba="0.0 0.0 0.8 1.0"/>
+  </material>
+
+  <material name="blue_trans">
+    <color rgba="0.0 0.0 0.8 0.8"/>
+  </material>
+
+  <material name="green">
+    <color rgba="0.0 0.8 0.0 1.0"/>
+  </material>
+
+  <material name="dark_grey">
+    <color rgba="0.2 0.2 0.2 1.0"/>
+  </material>
+
+  <material name="grey">
+    <color rgba="${99/255} ${99/255} ${99/255} 1.0"/>
+  </material>
+
+  <material name="orange">
+    <color rgba="${255/255} ${108/255} ${10/255} 1.0"/>
+  </material>
+
+  <material name="brown">
+    <color rgba="${222/255} ${207/255} ${195/255} 1.0"/>
+  </material>
+
+  <material name="red">
+    <color rgba="0.8 0.0 0.0 1.0"/>
+  </material>
+
+  <material name="white">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+  </material>
+
+  <material name="silver">
+    <color rgba="${169/255} ${176/255} ${180/255} 1.0"/>
+  </material>
+
+
+  <!-- Base Link -->
+  <link name="base_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${base_width+0.01} ${base_length+0.01} ${base_height+0.01}"/>
+      </geometry>
+    </collision>
+
+    <visual>  <!-- visual is not necessary for baselink, this is just in case the meshes doesn't display -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${base_width-0.05} ${base_length-0.15} ${base_height-0.1}"/>        
+      </geometry>
+      <material name="orange"/>
+    </visual>
+  </link>
+
+  <!-- base_footprint_joint -->
+  <link name="base_footprint">
+  </link>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_footprint"/>
+    <origin xyz="0 0 -${base_height/2}" rpy="0 0 0"/>
+  </joint>
+
+
+  <!-- wheel links and joints -->
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="-0.126 -${(base_length-wheel_len)/2.0+0.002} ${z_offset}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.2"/>
+  </joint>
+
+  <!-- left wheel Link -->
+  <link name="left_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+      <geometry>
+        <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+     <origin xyz="-0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_sprocket.stl" scale="0.001 0.001 0.001"/>
+        <!-- <cylinder length="${wheel_len}" radius="${wheel_radius}"/> -->
+      </geometry>
+      <material name="grey"/>
+    </visual>
+  </link> 
+
+    <joint name="right_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="right_wheel"/>
+      <!-- <origin xyz="0 ${base_width/2} ${z_offset}" rpy="0 0 0"/> -->
+      <origin xyz="-0.126 ${(base_length-wheel_len)/2.0+0.002} ${z_offset}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <dynamics damping="0.2"/>
+    </joint>
+
+    <!-- right wheel Link -->
+   <link name="right_wheel">
+      <collision>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+        </geometry>
+      </collision>
+
+      <visual>
+        <origin xyz="-0 0 0" rpy="0 0 0"/>
+        <geometry>
+		<mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_sprocket.stl" scale="0.001 0.001 0.001"/>
+          <!-- <cylinder length="${wheel_len}" radius="${wheel_radius}"/> -->
+        </geometry>
+        <material name="grey"/>
+      </visual>
+    </link> 
+
+    
+    <!-- body joints -->
+    <joint name="top_sides_plane_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="top_sides_plane"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="bottom_plane_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="bottom_plane"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="wheel_idlers_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="wheel_idlers"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="chains_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="chains"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="screws_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="screws"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="laser_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="laser"/>
+      <origin xyz="0.092 0 0" rpy="0 0 ${pi}"/>
+    </joint>
+
+    <joint name="cap_rings_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="cap_rings"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+   <joint name="cap_2_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="cap_2"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+   <joint name="cap_3_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="cap_3"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+   <joint name="ultrasonic_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="ultrasonic"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+
+    <!-- body links -->
+    <link name="top_sides_plane">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+	<!-- the stl files are in mm, but urdf is in m, therefore have to scale down 0.001 -->
+        <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_top_sides.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <material name="white"/>
+      </visual>
+    </link>
+
+     <link name="bottom_plane">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+	<!-- the stl files are in mm, but urdf is in m, therefore have to scale down 0.001 -->
+        <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_bottom.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <material name="grey"/>
+      </visual>
+    </link>
+
+      <link name="wheel_idlers">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+	<!-- the stl files are in mm, but urdf is in m, therefore have to scale down 0.001 -->
+        <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_wheel_idlers.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <material name="grey"/>
+      </visual>
+    </link>
+
+      <link name="chains">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+	<!-- the stl files are in mm, but urdf is in m, therefore have to scale down 0.001 -->
+        <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_chains.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+
+      <link name="screws">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+        <!-- the stl files are in mm, but urdf is in m, therefore have to scale down 0.001 -->
+        <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_screws.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+    </link> 
+
+      <link name="laser">
+      <visual>
+        <origin rpy="0 0 ${pi}" xyz="0.092 0 0"/>
+        <geometry>
+        <!-- the stl files are in mm, but urdf is in m, therefore have to scale down 0.001 -->
+        <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_rplidar.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="dark_grey"/>
+      </visual>
+    </link>
+
+      <link name="cap_rings">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+        <!-- the stl files are in mm, but urdf is in m, therefore have to scale down 0.001 -->
+        <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_cap_rings.stl" scale="0.001 0.001 0.001"/>
+        </geometry>      
+        <material name="silver"/>
+      </visual>
+    </link>
+
+     <link name="cap_2">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+        <!-- the stl files are in mm, but urdf is in m, therefore have to scale down 0.001 -->
+        <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_cap_2.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="blue_trans"/>
+      </visual>
+    </link>
+
+     <link name="cap_3">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+        <!-- the stl files are in mm, but urdf is in m, therefore have to scale down 0.001 -->
+        <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_cap_3.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="blue_trans"/>
+      </visual>
+    </link>
+
+     <link name="ultrasonic">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+        <!-- the stl files are in mm, but urdf is in m, therefore have to scale down 0.001 -->
+        <mesh filename="file:///home/tjpink/Documents/taubot_ws/src/taubot_description/urdf/meshes/taubot_ultrasonic.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+    </link>
+
+</robot>
